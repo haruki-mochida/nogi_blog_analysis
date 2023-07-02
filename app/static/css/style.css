@@ -1,0 +1,16 @@
+/* static/css/style.css */
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+p, a {
+    color: #666;
+}
+
+a {
+    text-decoration: none;
+}

@@ -1,0 +1,30 @@
+<!-- templates/member_selection.html -->
+<!-- CSS only -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>メンバー選択 - 乃木坂46ブログワードクラウド生成器</title>
+</head>
+<body>
+  <h1>メンバー選択</h1>
+  <p>解析したいメンバーを選択してください。</p>
+  <form action="{{ url_for('views.blog_post_retrieval') }}" method="post">
+    <select name="member_url">
+      <!-- メンバーのリストはサーバーから動的に生成 -->
+      {% for member in members %}
+      <option value="{{ member.id }}">{{ member.name }}</option>
+      {% endfor %}
+    </select>
+    <!-- ブログの件数を入力するフィールドを追加 -->
+    <input type="number" name="num_blogs" min="1" max="100" required>
+    <input type="submit" value="選択">
+  </form>
+</body>
+</html>
