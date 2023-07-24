@@ -2,7 +2,13 @@ from flask import Blueprint, render_template
 from flask import request, abort
 from bs4 import BeautifulSoup
 import requests
+from flask import session
+from flask import Flask
 
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your secret key' # ここに任意の秘密鍵を設定
+
+app.debug = True
 
 bp = Blueprint('views', __name__)
 
@@ -45,9 +51,24 @@ def blog_post_retrieval():
         abort(400, description="Invalid number of blogs")  # 不適切な入力があった場合は400エラーを返す
 
     num_posts = int(num_posts)
-    posts = ...
+
+    # 初期化
+    session['progress'] = 0
+
+    posts = []
+    for i in range(num_posts):
+        # 省略: ブログ記事の取得処理
+        posts.append(...)
+
+        # 進行状況を更新します。
+        session['progress'] = (i + 1) / num_posts * 100
 
     return render_template('analysis_waiting.html', posts=posts)
+
+@bp.route('/progress')
+def progress():
+    # 進行状況を返します。
+    return str(session.get('progress', 0))
 
 @bp.route('/analysis', methods=['POST'])
 def analysis():
@@ -55,9 +76,3 @@ def analysis():
     posts = ...
     word_cloud = ...
     return render_template('word_cloud_display.html', word_cloud=word_cloud)
-
-@bp.route('/progress')
-def progress():
-    # ここで進行状況を計算または取得します。
-    # この例ではシンプルに固定値を返しますが、実際には進行状況を表す値を返すように実装する必要があります。
-    return "進行中"
