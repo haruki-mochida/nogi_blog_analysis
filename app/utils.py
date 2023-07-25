@@ -7,6 +7,16 @@ mecab = MeCab.Tagger("-Ochasen")
 
 # ブログリストURLから各ブログエントリのURLを抽出する関数
 def get_blog_urls(blog_list_base_url, page):
+    # Check if blog_list_base_url is a string
+    if not isinstance(blog_list_base_url, str):
+        print("Error: blog_list_base_url should be a string.")
+        return []
+
+    # Check if page is a positive integer
+    if not isinstance(page, int) or page < 1:
+        print("Error: page should be a positive integer.")
+        return []
+
     # 'ima'の値はページ番号によって変わるため、ここで計算
     ima = 1717 if page % 2 == 0 else 1659
     blog_list_url = blog_list_base_url.format(ima=ima, page=page)
@@ -29,6 +39,7 @@ def get_blog_urls(blog_list_base_url, page):
         base_url = "https://www.nogizaka46.com"
         # 各ブログエントリのURLをリストとして返す
         return [base_url + a['href'] for a in soup.select('a.bl--card')]
+
 
 
 # テキストから名詞を抽出する関数
