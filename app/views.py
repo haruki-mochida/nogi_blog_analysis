@@ -1,14 +1,13 @@
+from flask import request
+import os
+print("Current Working Directory: ", os.getcwd())
+from .utils import get_blog_urls, fetch_blog_text, extract_nouns
+from .utils import create_word_cloud
 from flask import Blueprint, render_template
 from flask import request, abort
 from bs4 import BeautifulSoup
 import requests
 from flask import session
-from flask import Flask
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your secret key' # ここに任意の秘密鍵を設定
-
-app.debug = True
 
 bp = Blueprint('views', __name__)
 
@@ -72,7 +71,23 @@ def progress():
 
 @bp.route('/analysis', methods=['POST'])
 def analysis():
-    # リクエストからブログ記事を取得し、解析を行います
-    posts = ...
-    word_cloud = ...
+    # ブログリストのURLとページ数をリクエストから取得
+    blog_list_base_url = request.form.get('blog_list_base_url')
+    page = request.form.get('page')
+    if page is not None:
+        page = int(page)
+
+    # ブログ記事のURLを取得
+    blog_urls = get_blog_urls(blog_list_base_url, page)
+
+    # すべてのブログ記事から名詞を抽出
+    all_nouns = []
+    for blog_url in blog_urls:
+        blog_text = fetch_blog_text(blog_url)
+        nouns = extract_nouns(blog_text)
+        all_nouns.extend(nouns)
+
+    # ワードクラウドを生成
+    word_cloud = create_word_cloud(all_nouns)
+
     return render_template('word_cloud_display.html', word_cloud=word_cloud)

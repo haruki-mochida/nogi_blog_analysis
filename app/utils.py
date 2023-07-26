@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import MeCab
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 # MeCabのインスタンスを生成
 mecab = MeCab.Tagger("-Ochasen")
@@ -78,3 +80,13 @@ def fetch_blog_text(blog_url):
         blog_text = soup.select_one('.bd--edit').get_text()
         # テキストを返す
         return blog_text
+
+def create_word_cloud(nouns):
+    # ワードクラウドの生成
+    wordcloud = WordCloud(background_color='white',width=900,height=500).generate(' '.join(nouns))
+
+    # ワードクラウドを表示
+    plt.figure(figsize=(15,12))
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.show()
