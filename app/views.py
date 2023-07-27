@@ -1,6 +1,4 @@
 from flask import request
-import os
-print("Current Working Directory: ", os.getcwd())
 from .utils import get_blog_urls, fetch_blog_text, extract_nouns
 from .utils import create_word_cloud
 from flask import Blueprint, render_template
@@ -76,6 +74,11 @@ def analysis():
     page = request.form.get('page')
     if page is not None:
         page = int(page)
+    # ワードクラウドを生成
+    word_cloud_path = create_word_cloud(all_nouns)
+
+    return render_template('word_cloud_display.html', word_cloud_path=word_cloud_path)
+
 
     # ブログ記事のURLを取得
     blog_urls = get_blog_urls(blog_list_base_url, page)

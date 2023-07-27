@@ -85,8 +85,12 @@ def create_word_cloud(nouns):
     # ワードクラウドの生成
     wordcloud = WordCloud(background_color='white',width=900,height=500).generate(' '.join(nouns))
 
-    # ワードクラウドを表示
+    # 一時的なファイルの作成
+    _, path = tempfile.mkstemp(suffix=".png")
     plt.figure(figsize=(15,12))
     plt.imshow(wordcloud)
     plt.axis("off")
-    plt.show()
+    plt.savefig(path, bbox_inches='tight', pad_inches=0)
+    plt.close()
+
+    return path  # ファイル名を返す
