@@ -6,6 +6,7 @@ from flask import request, abort
 from bs4 import BeautifulSoup
 import requests
 from flask import session
+from collections import Counter
 
 bp = Blueprint('views', __name__)
 
@@ -48,19 +49,18 @@ def blog_post_retrieval():
         abort(400, description="Invalid number of blogs")  # 不適切な入力があった場合は400エラーを返す
 
     num_posts = int(num_posts)
-
-    # 初期化
     session['progress'] = 0
 
-    posts = []
+    blog_urls = []
     for i in range(num_posts):
-        # 省略: ブログ記事の取得処理
-        posts.append(...)
-
-        # 進行状況を更新します。
+        # 指定したメンバーの1つのブログ記事のURLを取得
+        blog_urls = get_blog_urls(member_id, num_posts)
         session['progress'] = (i + 1) / num_posts * 100
 
-    return render_template('analysis_waiting.html', posts=posts)
+    # Save blog URLs for later processing
+    session['blog_urls'] = blog_urls
+
+    return render_template('analysis_waiting.html')
 
 @bp.route('/progress')
 def progress():
@@ -69,19 +69,7 @@ def progress():
 
 @bp.route('/analysis', methods=['POST'])
 def analysis():
-    # ブログリストのURLとページ数をリクエストから取得
-    blog_list_base_url = request.form.get('blog_list_base_url')
-    page = request.form.get('page')
-    if page is not None:
-        page = int(page)
-    # ワードクラウドを生成
-    word_cloud_path = create_word_cloud(all_nouns)
-
-    return render_template('word_cloud_display.html', word_cloud_path=word_cloud_path)
-
-
-    # ブログ記事のURLを取得
-    blog_urls = get_blog_urls(blog_list_base_url, page)
+    blog_urls = session.get('blog_urls', [])
 
     # すべてのブログ記事から名詞を抽出
     all_nouns = []
@@ -90,7 +78,8 @@ def analysis():
         nouns = extract_nouns(blog_text)
         all_nouns.extend(nouns)
 
-    # ワードクラウドを生成
-    word_cloud = create_word_cloud(all_nouns)
+    word_dict = Counter(all_nouns)
 
-    return render_template('word_cloud_display.html', word_cloud=word_cloud)
+    wordcloud_image_path = create_word_cloud(word_dict)
+
+    return render_template('word_cloud_display.html', word_cloud_path=wordcloud_image_path)

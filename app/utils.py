@@ -81,16 +81,13 @@ def fetch_blog_text(blog_url):
         # テキストを返す
         return blog_text
 
-def create_word_cloud(nouns):
-    # ワードクラウドの生成
-    wordcloud = WordCloud(background_color='white',width=900,height=500).generate(' '.join(nouns))
+def create_word_cloud(word_dict, output_path="wordcloud.png"):
+    wordcloud = WordCloud(background_color='white', width=900, height=500).generate_from_frequencies(word_dict)
 
-    # 一時的なファイルの作成
-    _, path = tempfile.mkstemp(suffix=".png")
-    plt.figure(figsize=(15,12))
-    plt.imshow(wordcloud)
-    plt.axis("off")
-    plt.savefig(path, bbox_inches='tight', pad_inches=0)
+    plt.figure(figsize=(15, 12))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close()
 
-    return path  # ファイル名を返す
+    return output_path
