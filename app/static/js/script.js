@@ -1,15 +1,12 @@
-// static/js/script.js
-document.addEventListener('DOMContentLoaded', (event) => {
-    console.log("DOM fully loaded and parsed");
-
-    // 解析待ちページであれば解析の進行状況を定期的に取得
-    if (document.querySelector('#progress')) {
-        setInterval(() => {
-            fetch('/progress')
-                .then(response => response.text())
-                .then(progress => {
-                    document.querySelector('#progress').textContent = progress;
-                });
-        }, 1000);  // 1秒ごとに取得
-    }
-});
+window.onload = function() {
+    setInterval(function(){
+        fetch('/progress')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('progress').innerText = 'Progress: ' + data + '%';
+            if (data === '100') {
+                window.location.href = '/analysis';
+            }
+        });
+    }, 1000);  // 1000ミリ秒（1秒）ごとにリクエストを送る
+};

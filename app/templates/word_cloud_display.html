@@ -8,16 +8,13 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
+  <meta charset="UTF-8">
   <title>ワードクラウド表示 - 乃木坂46ブログワードクラウド生成器</title>
   <!-- style.cssを読み込む -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-  <h1>ワードクラウド表示</h1>
-  <img src="{{ url_for('send_file', filename=word_cloud_path) }}" alt="ワードクラウド">
-</body>
 <body>
   <h1>ワードクラウド表示</h1>
   <p>解析結果のワードクラウドです。</p>

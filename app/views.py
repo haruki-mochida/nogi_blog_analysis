@@ -67,7 +67,7 @@ def progress():
     # 進行状況を返します。
     return str(session.get('progress', 0))
 
-@bp.route('/analysis', methods=['POST'])
+@bp.route('/analysis', methods=['GET'])
 def analysis():
     blog_urls = session.get('blog_urls', [])
 
