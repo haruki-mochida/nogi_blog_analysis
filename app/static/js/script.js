@@ -4,7 +4,7 @@ window.onload = function() {
         .then(response => response.text())
         .then(data => {
             document.getElementById('progress').innerText = 'Progress: ' + data + '%';
-            if (data == '100') {
+            if (parseInt(data) === 100) {
                 window.location.href = '/analysis';
             }
         });

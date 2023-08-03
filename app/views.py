@@ -54,13 +54,14 @@ def blog_post_retrieval():
     blog_urls = []
     for i in range(num_posts):
         # 指定したメンバーの1つのブログ記事のURLを取得
-        blog_urls = get_blog_urls(member_id, num_posts)
+        blog_urls.extend(get_blog_urls(member_id, i+1)) # ページ番号をi+1とする
         session['progress'] = (i + 1) / num_posts * 100
 
     # Save blog URLs for later processing
     session['blog_urls'] = blog_urls
 
     return render_template('analysis_waiting.html')
+
 
 @bp.route('/progress')
 def progress():
