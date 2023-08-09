@@ -48,19 +48,18 @@ def blog_post_retrieval():
     if num_posts is None or not num_posts.isdigit() or not 1 <= int(num_posts) <= 100:
         abort(400, description="Invalid number of blogs")  # 不適切な入力があった場合は400エラーを返す
 
-    num_posts = int(num_posts)
-    session['progress'] = 0
+    num_posts = int(num_posts)  # numpostを整数にキャスト
+    session['progress'] = 0  # session初期化
 
-    blog_urls = []
-    for i in range(num_posts):
-        # 指定したメンバーの1つのブログ記事のURLを取得
-        blog_urls.extend(get_blog_urls(member_id, i+1)) # ページ番号をi+1とする
-        session['progress'] = (i + 1) / num_posts * 100
+    # 指定したメンバーのブログ記事のURLを取得
+    blog_urls = get_blog_urls(member_id, num_posts)
 
     # Save blog URLs for later processing
     session['blog_urls'] = blog_urls
+    session['progress'] = 100  # タスクが完了したので、進捗を100%とする
 
     return render_template('analysis_waiting.html')
+
 
 
 @bp.route('/progress')
@@ -71,16 +70,37 @@ def progress():
 @bp.route('/analysis', methods=['GET'])
 def analysis():
     blog_urls = session.get('blog_urls', [])
-
+    error_message = None  # Store the error message
     # すべてのブログ記事から名詞を抽出
     all_nouns = []
     for blog_url in blog_urls:
         blog_text = fetch_blog_text(blog_url)
+        if not blog_text:  # ブログテキストが空またはNoneの場合
+            print(f"Error fetching blog text for URL: {blog_url}")
+            continue
+
         nouns = extract_nouns(blog_text)
+        if not nouns:  # 名詞が空またはNoneの場合
+            print(f"No nouns extracted for blog URL: {blog_url}")
+            continue
+
         all_nouns.extend(nouns)
+
+        print(f"Blog URL: {blog_url}")
+        print("Blog Text:")
+        print(blog_text)
+        print("Nouns Extracted:")
+        print(nouns)
+        print("------")
+
+    # If all_nouns is still empty after fetching and extracting, return an error
+    if not all_nouns:
+        error_message = "Error: No nouns were extracted from the blog texts."
+        print(error_message)
+        return render_template('error.html', error_message=error_message)  # Pass the error message to the template
 
     word_dict = Counter(all_nouns)
 
     wordcloud_image_path = create_word_cloud(word_dict)
-
+    
     return render_template('word_cloud_display.html', word_cloud_path=wordcloud_image_path)
