@@ -8,35 +8,37 @@ import matplotlib.pyplot as plt
 mecab = MeCab.Tagger("-Ochasen")
 
 # ブログリストURLから各ブログエントリのURLを抽出する関数
-BASE_BLOG_URL = "https://www.nogizaka46.com/"
+BASE_BLOG_URL = "https://www.nogizaka46.com"
 
 def get_blog_urls(member_path, num_posts):
     urls = []
     page_number = 0
-
-    # member_pathをBASE_BLOG_URLと結合する
     full_url = BASE_BLOG_URL + member_path
 
     while len(urls) < num_posts:
         response = requests.get(full_url)
 
+        # HTTPレスポンスの確認
+        print(f"HTTP Response for {full_url}: {response.status_code}")
         if response.status_code != 200:
-            break  # エラーが発生した場合、ループを抜ける
+            print(f"Error fetching data from {full_url}. Response content: {response.content}")
+            break
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        for anchor in soup.select('a.bl--card'):
-            if len(urls) >= num_posts:
-                break  # 要求された数だけURLを取得したらループを終了する
+        fetched_urls = soup.select('.bl--list .bl--card a')
 
-            urls.append(anchor["href"])
+        # BeautifulSoupのセレクタの確認
+        print(f"URLs fetched using selector 'a.bl--card': {fetched_urls}")
+
+        for anchor in fetched_urls:
+            url = anchor.get("href")
+            if url:
+                urls.append(url)
 
 
+        page_number += 1
 
     return urls
-
-
-
-
 
 # テキストから名詞を抽出する関数
 def extract_nouns(text):
@@ -52,12 +54,11 @@ def extract_nouns(text):
     # 名詞のリストを返す
     return nouns
 
-
 # ブログエントリのURLからテキストを取得する関数
 def fetch_blog_text(blog_url):
     # HTTPリクエストを送信してHTMLを取得し、エラーハンドリングも実施
     try:
-        response = requests.get(blog_url)
+        response = requests.get(BASE_BLOG_URL + blog_url)
         response.raise_for_status()
     except requests.exceptions.HTTPError as http_err:
         # HTTPエラーが発生した場合のエラーメッセージ
