@@ -8,14 +8,17 @@ import matplotlib.pyplot as plt
 mecab = MeCab.Tagger("-Ochasen")
 
 # ブログリストURLから各ブログエントリのURLを抽出する関数
-BASE_BLOG_URL = "https://www.nogizaka46.com/member/{member_name}/blog?page={page_number}"
+BASE_BLOG_URL = "https://www.nogizaka46.com/"
 
-def get_blog_urls(member_name, num_posts):
+def get_blog_urls(member_path, num_posts):
     urls = []
     page_number = 0
 
+    # member_pathをBASE_BLOG_URLと結合する
+    full_url = BASE_BLOG_URL + member_path
+
     while len(urls) < num_posts:
-        response = requests.get(BASE_BLOG_URL.format(member_name=member_name, page_number=page_number))
+        response = requests.get(full_url)
 
         if response.status_code != 200:
             break  # エラーが発生した場合、ループを抜ける
@@ -27,9 +30,11 @@ def get_blog_urls(member_name, num_posts):
 
             urls.append(anchor["href"])
 
-        page_number += 1
+
 
     return urls
+
+
 
 
 
